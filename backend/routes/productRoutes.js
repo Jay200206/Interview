@@ -1,30 +1,20 @@
-const express = require('express');
-const multer = require('multer');
+const express = require("express");
 const router = express.Router();
-const productController = require('../controllers/productController');
-const path = require('path'); // Add this line to import the path module
+const productController = require("../controllers/productController");
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = `${Date.now()}-${Math.round(
-            Math.random() * 1e9
-        )}${path.extname(file.originalname)}`;
-        cb(null, uniqueSuffix);
-    },
-});
-const upload = multer({ storage });
+// Retrieve all products
+router.get("/products", productController.getProducts);
 
-// Get all products
-router.get('/', productController.getProducts);
+// GET a single product
+router.get("/products/:id", productController.getProductById);
 
 // Add a new product
-router.post('/add', upload.single('image'), productController.addProduct);
+router.post("/products/add", productController.addProduct);
+
+// Update a product
+router.put("/products/:id", productController.updateProduct);
 
 // Delete a product
-router.delete('/:id', productController.deleteProduct);
+router.delete("/products/:id", productController.deleteProduct);
 
 module.exports = router;

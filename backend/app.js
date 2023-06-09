@@ -1,20 +1,21 @@
-const express = require('express');
-const cors = require('cors');
-const productRoutes = require('./routes/productRoutes');
-const connectDB = require('./config');
+const express = require("express");
+const connectDB = require("./config");
+const productRoutes = require("./routes/productRoutes");
+const path = require("path");
 
 const app = express();
+const port = 5000;
 
-app.use(cors());
+// Middleware
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Routes
+app.use("/api", productRoutes);
 
 // Connect to MongoDB
 connectDB();
 
-// Use the product routes
-app.use('/api/products', productRoutes);
-
-const port = 5000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

@@ -1,61 +1,116 @@
-const path = require('path');
-const fs = require('fs');
-const Product = require('../models/Product');
+const Product = require("../models/Product");
+const multer = require("multer");
+
+// Multer configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed."), false);
+  }
+};
+
+const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // Get all products
 exports.getProducts = async (req, res) => {
   try {
     const products = await Product.find();
-    res.status(200).json(products);
+    res.json(products);
   } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({ error: 'Failed to fetch products' });
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+// Get a single product
+exports.getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
   }
 };
 
 // Add a new product
 exports.addProduct = async (req, res) => {
   try {
-    const { name, price, description } = req.body;
-    const image = req.file;
+    upload.single("image")(req, res, async (err) => {
+      if (err instanceof multer.MulterError) {
+        res.status(400).json({ error: "Image upload error: " + err.message });
+      } else if (err) {
+        res.status(400).json({ error: "Image upload error: " + err.message });
+      } else {
+        const { name, price, description } = req.body;
+        const imagePath = req.file ? req.file.path : "";
 
-    if (!name || !price || !description || !image) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
+        const product = new Product({
+          name,
+          image: imagePath,
+          price,
+          description,
+        });
 
-    const newProduct = new Product({
-      name,
-      image: `/uploads/${image.filename}`, // Store the file path in the database
-      price,
-      description,
+        await product.save();
+        res.status(201).json(product);
+      }
     });
-    await newProduct.save();
-    res.status(201).json(newProduct);
   } catch (error) {
-    console.error('Error adding product:', error);
-    res.status(500).json({ error: 'Failed to add product' });
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Update a product
+exports.updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    upload.single("image")(req, res, async (err) => {
+      if (err instanceof multer.MulterError) {
+        res.status(400).json({ error: "Image upload error: " + err.message });
+      } else if (err) {
+        res.status(400).json({ error: "Image upload error: " + err.message });
+      } else {
+        const { name, price, description } = req.body;
+        const imagePath = req.file ? req.file.path : "";
+
+        const product = await Product.findByIdAndUpdate(
+          id,
+          {
+            name,
+            image: imagePath,
+            price,
+            description,
+          },
+          { new: true }
+        );
+
+        res.json(product);
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 // Delete a product
 exports.deleteProduct = async (req, res) => {
   try {
-    const productId = req.params.id;
-    const product = await Product.findByIdAndDelete(productId);
-
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-
-    if (product.image) {
-      const filePath = path.join(__dirname, '../uploads', product.image);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    }
-
-    res.json({ message: 'Product deleted successfully' });
+    const { id } = req.params;
+    await Product.findByIdAndDelete(id);
+    res.sendStatus(204);
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting product', error: error.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
