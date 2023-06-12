@@ -64,9 +64,9 @@ const AddProduct = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </label>
-        <Link to="/">
-          <button type="submit">Add Product</button>
-        </Link>
+        {/* <Link to="/"> */}
+        <button type="submit">Add Product</button>
+        {/* </Link> */}
       </form>
     </div>
   );

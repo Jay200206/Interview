@@ -22,7 +22,7 @@ export const getProduct = async (id) => {
 
 export const uploadProduct = async (data) => {
   try {
-    const response = await axios.post(`${BASE_URL}/products`, data, {
+    const response = await axios.post(`${BASE_URL}/products/add`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
