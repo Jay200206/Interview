@@ -32,7 +32,7 @@ const Product = () => {
 
   return (
     <div className="product-details">
-      <img src={product.image} alt={product.name} style={{ height: "100px" }} />
+      <img src={`http://localhost:5000/${product.image}`} alt={product.name} style={{ height: "100px" }} />
       <h4>{product.name}</h4>
       <p>{product.price}</p>
       <p>{product.description}</p>

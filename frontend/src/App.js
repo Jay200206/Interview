@@ -4,6 +4,7 @@ import ProductList from "./components/ProductList";
 import Product from "./components/Product.js";
 import AddProduct from "./components/AddProduct";
 import UpdateProduct from "./components/UpdateProduct";
+import Cart from "./pages/CartPage";
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
         <Route path="/product/add" element={<AddProduct />} />
         <Route path="/product/:id" element={<Product />} />
         <Route path="/product/update/:id" element={<UpdateProduct />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </Router>
   );

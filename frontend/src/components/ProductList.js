@@ -20,7 +20,6 @@ const ProductList = () => {
 
   const handleDelete = async (id) => {
     try {
-      console.log(id);
       await deleteProduct(id);
       setProducts(products.filter((product) => product._id !== id));
     } catch (error) {
@@ -28,6 +27,14 @@ const ProductList = () => {
     }
   };
 
+  const handleAddToCart = (id) => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const product = products.find((item) => item._id === id);
+    if (product) {
+      cartItems.push(product);
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    }
+  };
   return (
     <div className="product-list">
       <div className="product-list-header">
@@ -46,6 +53,7 @@ const ProductList = () => {
           <h4>{product.name}</h4>
           <p>{product.price}</p>
           <p>{product.description}</p>
+          <Link to={`/cart`}><button onClick={() => handleAddToCart(product._id)}>Add to cart</button></Link>
           <Link to={`/product/${product._id}`}>View Details</Link>
           <Link to={`/product/update/${product._id}`}>
             <button>Update</button>

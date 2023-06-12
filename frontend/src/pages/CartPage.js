@@ -1,16 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Cart from "../components/Cart";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
 
+  useEffect(() => {
+    const storedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    setCartItems(storedCartItems);
+  }, []);
+
   const removeFromCart = (item) => {
-    setCartItems(cartItems.filter((i) => i._id !== item._id));
+    const updatedCartItems = cartItems.filter((i) => i._id !== item._id);
+    setCartItems(updatedCartItems);
+    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
   };
 
   return (
     <div>
-      <h2>Cart Page</h2>
       <Cart cartItems={cartItems} removeFromCart={removeFromCart} />
     </div>
   );
