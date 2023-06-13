@@ -31,8 +31,11 @@ const ProductList = () => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     const product = products.find((item) => item._id === id);
     if (product) {
-      cartItems.push(product);
-      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      const isItemInCart = cartItems.some((item) => item._id === id);
+      if (!isItemInCart) {
+        cartItems.push(product);
+        localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      }
     }
   };
   return (
@@ -53,7 +56,11 @@ const ProductList = () => {
           <h4>{product.name}</h4>
           <p>{product.price}</p>
           <p>{product.description}</p>
-          <Link to={`/cart`}><button onClick={() => handleAddToCart(product._id)}>Add to cart</button></Link>
+          <Link to={`/cart`}>
+            <button onClick={() => handleAddToCart(product._id)}>
+              Add to cart
+            </button>
+          </Link>
           <Link to={`/product/${product._id}`}>View Details</Link>
           <Link to={`/product/update/${product._id}`}>
             <button>Update</button>
