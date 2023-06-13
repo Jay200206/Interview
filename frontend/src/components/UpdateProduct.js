@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getProduct, updateProduct } from "../services/api";
 
 const UpdateProduct = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -60,6 +61,7 @@ const UpdateProduct = () => {
       setPreviewImage(null);
       setPrice("");
       setDescription("");
+      navigate("/");
     } catch (error) {
       console.log(error);
     }

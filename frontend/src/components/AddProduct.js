@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { uploadProduct } from "../services/api";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const AddProduct = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
   const [price, setPrice] = useState("");
@@ -28,6 +29,7 @@ const AddProduct = () => {
       setImage(null);
       setPrice("");
       setDescription("");
+      navigate("/");
     } catch (error) {
       console.log(error);
     }

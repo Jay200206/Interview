@@ -22,6 +22,11 @@ const ProductList = () => {
     try {
       await deleteProduct(id);
       setProducts(products.filter((product) => product._id !== id));
+
+      // Remove the deleted product from the cart if it exists
+      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+      const updatedCartItems = cartItems.filter((item) => item._id !== id);
+      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
     } catch (error) {
       console.log(error);
     }
